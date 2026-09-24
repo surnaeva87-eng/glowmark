@@ -48,7 +48,8 @@ public class MarkScreen extends Screen {
         page = Math.max(0, Math.min(page, pages - 1));
 
         // заголовок и поиск
-        addRenderableWidget(new StringWidget(width / 2 - 120, 8, 240, 9, title, font).alignCenter());
+        int tw = font.width(title);
+        addRenderableWidget(new StringWidget(width / 2 - tw / 2, 8, tw, 9, title, font));
         EditBox box = new EditBox(font, width / 2 - 100, 20, 200, 18, Component.literal("Поиск"));
         box.setHint(Component.literal("Поиск по нику..."));
         box.setValue(search);

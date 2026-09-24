@@ -38,22 +38,22 @@ public class GlowMarkClient implements ClientModInitializer {
         CONFIG = GlowConfig.load();
 
         openKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.glowmark.open", InputConstants.Type.KEYSYM, InputConstants.KEY_Y, KeyMapping.Category.MISC));
+                "key.glowmark.open", InputConstants.Type.KEYBOARD, InputConstants.KEY_Y, KeyMapping.Category.MISC));
         toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.glowmark.toggle", InputConstants.Type.KEYSYM, InputConstants.KEY_H, KeyMapping.Category.MISC));
+                "key.glowmark.toggle", InputConstants.Type.KEYBOARD, InputConstants.KEY_H, KeyMapping.Category.MISC));
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
     }
 
     private void onTick(Minecraft mc) {
         while (openKey.consumeClick()) {
-            if (mc.player != null && mc.screen == null) mc.setScreen(new MarkScreen());
+            if (mc.player != null && mc.gui.screen() == null) mc.gui.setScreen(new MarkScreen());
         }
         while (toggleKey.consumeClick()) {
             setGlow(mc, !CONFIG.glow);
             if (mc.player != null) {
-                mc.player.displayClientMessage(Component.literal(
-                        "[GlowMark] Подсветка: " + (CONFIG.glow ? "ВКЛ" : "ВЫКЛ")), true);
+                mc.gui.hud.setOverlayMessage(Component.literal(
+                        "[GlowMark] Подсветка: " + (CONFIG.glow ? "ВКЛ" : "ВЫКЛ")), false);
             }
         }
 
@@ -120,7 +120,7 @@ public class GlowMarkClient implements ClientModInitializer {
 
     /** Строка в action bar: ближайшие отмеченные игроки и дистанция. */
     private void radar(Minecraft mc) {
-        if (!CONFIG.radar || mc.screen != null || CONFIG.marked.isEmpty()) return;
+        if (!CONFIG.radar || mc.gui.screen() != null || CONFIG.marked.isEmpty()) return;
         List<Player> list = new ArrayList<>();
         for (Player p : mc.level.players()) {
             if (p != mc.player && CONFIG.isMarked(p.getUUID())) list.add(p);
@@ -134,12 +134,12 @@ public class GlowMarkClient implements ClientModInitializer {
             if (i > 0) sb.append("§7 | §6");
             sb.append(p.getName().getString()).append(" §f").append(Math.round(mc.player.distanceTo(p))).append("м");
         }
-        mc.gui.setOverlayMessage(Component.literal(sb.toString()), false);
+        mc.gui.hud.setOverlayMessage(Component.literal(sb.toString()), false);
     }
 
     private void alert(Minecraft mc, String text) {
         if (!CONFIG.alerts) return;
-        mc.player.displayClientMessage(Component.literal("§8[§6GlowMark§8] §r" + text), false);
+        mc.player.sendSystemMessage(Component.literal("§8[§6GlowMark§8] §r" + text));
         if (CONFIG.sound) {
             mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F));
         }
