@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "glowmark",
+  "version": "${version}",
+  "name": "GlowMark",
+  "description": "Отмечай игроков галочкой: подсветка, оповещения о входе/выходе, радар дистанции, звук.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.example.glowmark.GlowMarkClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": ">=0.161.0"
+  }
+}
